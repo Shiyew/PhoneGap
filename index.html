@@ -1,19 +1,23 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+
 <script>
 
 function AttachBody(){
-		sMailto="mailto:shi-yew.chen.civ@mail.mil?subject=MailfromMobilApp";
+		sMailto="mailto:shi-yew.chen.civ@mail.mil?subject=" + encodeURI("Mail from Mobil APP");
 		
-		var sBody="&body="+document.forms[0].txtBody.value;
+		var sBody="&body="+ encodeURI(document.forms[0].txtBody.value);
 		
 		document.getElementById("aMailto").setAttribute("href",sMailto+sBody);
 		
 		
 }
 </script>
-	
 </head>
+
 
 <body style="font-size:24px">
 <a id="aMailto" href="mailto:shiyew@gmail.com?subject=MailfromMobilApp">To Sy</a>
