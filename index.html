@@ -1,15 +1,25 @@
 <html>
-<body>
-<FORM Action="mailto:shiyew@gmail.com?Subject=ET" METHOD="POST">
-	Quick Mail
-	<Br>Subject: 
-	<INPUT name="Subject" value="ET">
-	<Br>Body:
-	<TEXTAREA name="Body">
-	Go HOME!
-	</TEXTAREA>
-	<BR>
-	<INPUT type="submit" value="Submit"> 
-</FORM>
+<head>
+<script>
+
+function AttachBody(){
+		sMailto="mailto:shi-yew.chen.civ@mail.mil?subject=MailfromMobilApp";
+		
+		var sBody="&body="+document.forms[0].txtBody.value;
+		
+		document.getElementById("aMailto").setAttribute("href",sMailto+sBody);
+		
+		
+}
+</script>
+	
+</head>
+
+<body style="font-size:24px">
+<a id="aMailto" href="mailto:shiyew@gmail.com?subject=MailfromMobilApp">To Sy</a>
+
+<form name="frmMail">
+Body: <input style="font-size: 24px" type="text" name="txtBody" onchange="AttachBody()"/>
+</form>
 </body>
 </html>
