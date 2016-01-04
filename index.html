@@ -1,186 +1,69 @@
 <!DOCTYPE html>
-<!--
-Copyright 2013, Contraterrene eLearning Group, LLC
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
-
 <html>
-<head>
-	<meta charset="utf-8" />
-	<meta name="format-detection" content="telephone=no" />
-	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-	<link rel="stylesheet" type="text/css" href="css/index.css" />
-	<title>Test driver for gapfile.js</title>
-	<style>
-		
-		button {
-    font-size:36px;
-    font-weight:normal;
-    text-align:center;
-}
+    <head>
+        <meta name="viewport" content="user-scalable=no,initial-scale=1, maximum-scale=1,minimum-scale=1, width=device-width" />
+        <title>PhoneGap Application</title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.3.2.css" />
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/jquery.mobile-1.3.2.min.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript">
+           var fileObject;
+           document.addEventListener("deviceready", onDeviceReady, true);
+            function onDeviceReady() {
+            window.requestFileSystem(LocalFileSystem.PERSISTENT,0,  onFileSystemSuccess, onError);
+            }
 
-	</style>
-	<script type="text/javascript" src="cordova.js"></script>
-	<script type="text/javascript">
-	var userfilename = "gftest.txt";
-	var usersubfilename = "gfsubdirtest.txt";
-	var userdir = "/"; // Default for iOS
-	var usersubdir = "gftestdir";
-	function onLoad() {
-        document.addEventListener("deviceready", onDeviceReady, false);
-    }
-	function onDeviceReady(){
-		if(device.platform === "Android"){
-			userdir = "/sdcard/"; // Can't write to root on Android.
-		}
-		// Insert code here to set proper directory for devices other than iOS or Android.
-		navigator.notification.alert("Ready to run tests!");
+function onFileSystemSuccess(fs) {
+                //Create Files
+                fs.root.getDirectory("someDirectory",
+                { create: true, exclusive: false },
+                null,onError);
+                fs.root.getFile("pgtest.txt",
+                { create: true, exclusive: false },
+                null,onError);
+                var dirReader = fs.root.createReader();
+                // Get a list of all the entries in the directory
+                dirReader.readEntries(success,onError);
+            }
 
-	}
-
-	function testWrite(){ 
-		GapFile.writeFile(userdir + userfilename,"Hello, world!\n",writeDone,writeFail);
-	}
-
-	function testWriteSubdirectory(){
-		GapFile.writeFile(userdir + usersubdir + "/" + usersubfilename,"Hello, subdirectory!\n",writeDone,writeFail);
-	}
-
-	function testDeleteSubdirectory(){
-		GapFile.deleteFile(userdir +  usersubdir + "/" + usersubfilename,deleteDone,deleteFail);
-	}
-	function testRead(){
-		// If the second parameter is true, return file contents rather
-		// than data URI.
-		GapFile.readFile(userdir + userfilename,true,readDone,readFail);
-	}
-
-	function testAppend(){ // You can call this repeatedly, then do testRead after each.
-		GapFile.appendFile(userdir + userfilename,"MOAR TEXT FOR THE WRITING!\n",appendDone,appendFail);
-	}
-
-	function testDelete(){
-		GapFile.deleteFile(userdir + userfilename,deleteDone,deleteFail);
-	}
-
-	function testExists(){
-		GapFile.fileExists(userdir + userfilename,existsDone,existsFail);
-	}
-
-	function testDirectory(){
-		GapFile.readDirectory(userdir,displayDirectory,dirFail);
-	}
-
-	function testDataURI(){
-		// If the second parameter is false, return data URI rather
-		// than file contents.
-		GapFile.readFile(userdir + userfilename,false,dataURIDone,dataURIFail);
-	}
-
-	function testDirectoryCreate(){
-		GapFile.mkDirectory(userdir + usersubdir,mkDirectoryDone,mkDirectoryFail);
-	}
-
-	function testDirectoryDelete(){
-		GapFile.rmDirectory(userdir + usersubdir,rmDirectoryDone,rmDirectoryFail);
-	}
+//Create List
+            function success(entries) {
+                var i;
+                var objectType;
 
 
-	function rmDirectoryDone(){
-		navigator.notification.alert("Directory removed.",nop);
-	}
+for (i=0; i < entries.length; i++) {
+                    if(entries[i].isDirectory == true) {
+                        objectType = 'Directory';
+                    } else {
+                        objectType = 'File';
+                    }
+                    $('#dirList').append('<li>n
+                                    <h3>' + entries[i].name + '</h3>n
+                                    <p>' + entries[i].toURI() + '</p>n
+                     <p class="ui-li-aside">Type:<strong>' + objectType + '</strong></p>n
+                      </li>');
+                }
+                $('#dirList').listview("refresh");
+            }
 
-	function rmDirectoryFail(){
-		navigator.notification.alert("Failed to remove directory.",nop);
-	}
-	function mkDirectoryDone(){
-		navigator.notification.alert("Directory created.",nop);
-	}
-
-	function mkDirectoryFail(){
-		navigator.notification.alert("Failed to create directory.",nop);
-	}
-	function dataURIDone(uri){
-		navigator.notification.alert("Data URI is: " + uri,nop);
-	}
-
-	function dataURIFail(){
-		navigator.notification.alert("Failed to retrieve data URI.",nop);
-	}
-
-	function displayDirectory(dirarr){
-		navigator.notification.alert(JSON.stringify(dirarr),nop);
-	}
-	function dirFail(){
-		navigator.notification.alert("Error reading directory.",nop);
-	}
-
-	function writeDone(fileuri){
-		navigator.notification.alert("Write successful. File is: " + fileuri,nop);
-	}
-	function writeFail(){
-		navigator.notification.alert("Error writing file",nop);
-	}
-
-	function appendDone(){
-		navigator.notification.alert("Append successful.",nop);
-	}
-	function appendFail(){
-		navigator.notification.alert("Error appending to file",nop);
-	}
-
-	function readDone(text){
-		navigator.notification.alert("Read successful. Text was " + text,nop);
-	}
-	function readFail(){
-		navigator.notification.alert("Error reading file.",nop);
-	}
-	function existsDone(exists){
-		navigator.notification.alert("File exists: " + exists,nop);
-	}
-	function existsFail(){
-		navigator.notification.alert("Error checking for file existence.",nop);
-	}
-	function deleteDone(){
-		navigator.notification.alert("Delete successful.",nop);
-	}
-	function deleteFail(){
-		navigator.notification.alert("Error deleting file.",nop);
-	}
-	function nop(){
-		// In "real life" you'd probably want something here. 
-	}
-	</script>
-</head>
-<body onload="onLoad()">
-	<div>&nbsp</div>  <!-- get past annoying status bar in iOS 7 -->
-	<div>&nbsp</div>
-	<div>&nbsp</div>
-	
-	<div>
-		<button onclick="testWrite();">Write file</button>
-		<button onclick="testRead();">Read file</button>
-		<button onclick="testDataURI();">Read file as data URI</button>
-		<button onclick="testDirectory();">Read directory</button>
-		<button onclick="testExists();">Test file existence</button>
-		<button onclick="testAppend();">Append to file</button>
-		<button onclick="testDelete();">Delete file</button>
-		<button onclick="testDirectoryCreate();">Create subdirectory</button>
-		<button onclick="testWriteSubdirectory();">Write file in subdirectory</button>
-		<button onclick="testDeleteSubdirectory();">Delete file in subdirectory</button>
-		<button onclick="testDirectoryDelete();">Delete subdirectory</button>
-	</div>
-	
+  
+            //Error
+            function onError(error) {
+                alert("Failed to list directory contents: " + error.code);
+            }
+   </script>
+    </head>
+    <body>
+      		  <div data-role="page">
+           		 	<div data-role="header">
+                		<h2>My Directories</h2>
+        		   	 </div>
+           		 <div data-role="content">
+               		 <ul id="dirList" data-role="listview" data-inset="true">
+               		 </ul>
+           		 </div>
+  	 </div>
 </body>
 </html>
-
