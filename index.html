@@ -7,6 +7,24 @@
 
 <script>
 
+function success(entries) {
+    var i;
+    for (i=0; i<entries.length; i++) {
+        console.log(entries[i].name);
+    }
+    alert (entries.length)
+}
+
+function fail(error) {
+    alert("Failed to list directory contents: " + error.code);
+}
+
+// Get a directory reader
+var directoryReader = dirEntry.createReader();
+
+// Get a list of all the entries in the directory
+directoryReader.readEntries(success,fail);
+
 function AttachBody(){
 		sMailto="mailto:shi-yew.chen.civ@mail.mil?subject=" + encodeURI("Mail from Mobil Phone APP");
 		
